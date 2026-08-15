@@ -25,16 +25,20 @@ TOKEN_DIR = Path.home() / ".garmin_tokens_tmp"
 
 def main():
     email = input("Email Garmin Connect : ").strip()
-    password = getpass.getpass("Mot de passe Garmin Connect : ")
+    password = getpass.getpass("Mot de passe Garmin Connect (invisible en tapant, c'est normal) : ")
 
-    def prompt_mfa():
-        return input("Code MFA (si demandé) : ").strip()
+    # Compatible anciennes ET nouvelles versions de garminconnect.
+    # Les versions récentes acceptent prompt_mfa=..., les anciennes non
+    # (dans ce cas, garth demande le code MFA tout seul via input() si besoin).
+    try:
+        client = garminconnect.Garmin(
+            email=email,
+            password=password,
+            prompt_mfa=lambda: input("Code MFA (si demandé) : ").strip(),
+        )
+    except TypeError:
+        client = garminconnect.Garmin(email=email, password=password)
 
-    client = garminconnect.Garmin(
-        email=email,
-        password=password,
-        prompt_mfa=prompt_mfa,
-    )
     client.login()
 
     TOKEN_DIR.mkdir(parents=True, exist_ok=True)
