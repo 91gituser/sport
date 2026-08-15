@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0E1116">
+<title>Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1116;
+    --surface:#171B22;
+    --surface-2:#1F2430;
+    --surface-3:#262C3A;
+    --text:#EDEAE2;
+    --text-dim:#8A8F9C;
+    --text-dim-2:#5C6272;
+    --run:#FF7A33;
+    --strength:#2FD3C2;
+    --other:#C9A6FF;
+    --muted:#2A2F3D;
+    --danger:#FF5C5C;
+    --radius:18px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overscroll-behavior-y:none;}
+  body{padding-top:var(--safe-top); padding-bottom:var(--safe-bottom);}
+  .app{max-width:480px; margin:0 auto; min-height:100vh; position:relative; padding:18px 16px 100px;}
+
+  .display{font-family:'Bebas Neue',sans-serif; letter-spacing:0.5px;}
+
+  /* HEADER */
+  header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+  header .brand{display:flex; flex-direction:column;}
+  header .brand .eyebrow{font-size:11px; letter-spacing:2px; color:var(--text-dim-2); text-transform:uppercase; font-weight:600;}
+  header .brand h1{font-family:'Bebas Neue',sans-serif; font-size:32px; margin:0; letter-spacing:1px; line-height:1;}
+  .week-nav{display:flex; align-items:center; gap:10px; background:var(--surface); border-radius:999px; padding:6px 8px; border:1px solid var(--surface-3);}
+  .week-nav button{background:none; border:none; color:var(--text); font-size:16px; width:26px; height:26px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .week-nav button:active{background:var(--surface-3);}
+  .week-nav .wk-label{font-size:12px; color:var(--text-dim); font-weight:600; min-width:78px; text-align:center;}
+
+  /* RING HERO */
+  .ring-hero{position:relative; display:flex; align-items:center; justify-content:center; margin:8px 0 22px;}
+  .ring-hero svg{width:100%; max-width:300px; height:auto; display:block;}
+  .ring-center{position:absolute; text-align:center; pointer-events:none;}
+  .ring-center .big{font-family:'Bebas Neue',sans-serif; font-size:52px; line-height:1; color:var(--text);}
+  .ring-center .unit{font-size:11px; letter-spacing:2px; color:var(--text-dim-2); text-transform:uppercase; font-weight:700; margin-top:2px;}
+  .ring-center .sub{font-size:12px; color:var(--text-dim); margin-top:8px; font-weight:500;}
+  .ring-legend{display:flex; justify-content:center; gap:16px; margin-top:-6px; margin-bottom:20px; flex-wrap:wrap;}
+  .ring-legend span{font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:6px;}
+  .dot{width:8px; height:8px; border-radius:50%; display:inline-block;}
+
+  /* STATS STRIP */
+  .stats-strip{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;}
+  .stat-card{background:var(--surface); border:1px solid var(--surface-3); border-radius:var(--radius); padding:14px 16px;}
+  .stat-card .val{font-family:'Bebas Neue',sans-serif; font-size:30px; line-height:1;}
+  .stat-card .lbl{font-size:11px; color:var(--text-dim); margin-top:4px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;}
+  .stat-card.run .val{color:var(--run);}
+  .stat-card.strength .val{color:var(--strength);}
+
+  /* SECTION TITLES */
+  .section-title{font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-dim-2); font-weight:700; margin:26px 0 10px 2px; display:flex; align-items:center; justify-content:space-between;}
+
+  /* DAILY STRIP (etirements / abdos) */
+  .daily-strip{display:flex; gap:6px; background:var(--surface); border:1px solid var(--surface-3); border-radius:var(--radius); padding:12px 10px;}
+  .day-col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .day-col .day-lbl{font-size:10px; color:var(--text-dim); font-weight:700; text-transform:uppercase;}
+  .day-col .day-num{font-size:9px; color:var(--text-dim-2); margin-bottom:2px;}
+  .toggle-dot{width:26px; height:26px; border-radius:50%; border:1.5px solid var(--surface-3); background:var(--surface-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; transition:transform .1s ease;}
+  .toggle-dot:active{transform:scale(0.9);}
+  .toggle-dot.on-stretch{background:var(--strength); border-color:var(--strength); color:#0E1116;}
+  .toggle-dot.on-abs{background:var(--other); border-color:var(--other); color:#0E1116;}
+
+  /* CONNECTIONS */
+  .conn-card{background:var(--surface); border:1px solid var(--surface-3); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;}
+  .conn-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .conn-top .name{font-weight:700; font-size:14px;}
+  .pill{font-size:10px; font-weight:700; padding:4px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:0.4px;}
+  .pill.off{background:rgba(255,92,92,0.12); color:var(--danger);}
+  .pill.on{background:rgba(47,211,194,0.14); color:var(--strength);}
+  .badge-garmin{font-size:9px; font-weight:700; color:var(--text-dim-2); background:var(--surface-2); border-radius:5px; padding:2px 5px; margin-left:6px; text-transform:uppercase; letter-spacing:0.3px;}
+  .conn-desc{font-size:12px; color:var(--text-dim); line-height:1.5;}
+
+  .nutri-row{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px;}
+  .nutri-field{display:flex; flex-direction:column; gap:4px;}
+  .nutri-field label{font-size:9px; color:var(--text-dim-2); font-weight:700; text-transform:uppercase;}
+  .nutri-field input{background:var(--surface-2); border:1px solid var(--surface-3); border-radius:8px; color:var(--text); font-size:13px; padding:7px 6px; width:100%; font-family:'Inter'; text-align:center;}
+  .nutri-field input:focus{outline:none; border-color:var(--run);}
+
+  /* SESSION LIST */
+  .day-group{margin-bottom:14px;}
+  .day-group .dg-title{font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin:0 0 6px 4px;}
+  .session-item{display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--surface-3); border-radius:14px; padding:12px 14px; margin-bottom:8px;}
+  .session-item .type-badge{width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;}
+  .session-item .info{flex:1; min-width:0;}
+  .session-item .info .t1{font-weight:700; font-size:14px; text-transform:capitalize;}
+  .session-item .info .t2{font-size:12px; color:var(--text-dim); margin-top:1px;}
+  .session-item .del{background:none; border:none; color:var(--text-dim-2); font-size:18px; cursor:pointer; padding:4px 6px;}
+  .empty-state{text-align:center; padding:26px 10px; color:var(--text-dim-2); font-size:13px; background:var(--surface); border:1px dashed var(--surface-3); border-radius:var(--radius);}
+
+  /* FAB */
+  .fab{position:fixed; bottom:calc(24px + var(--safe-bottom)); right:calc(50% - 240px + 18px); background:var(--run); color:#0E1116; border:none; width:56px; height:56px; border-radius:50%; font-size:28px; font-weight:700; box-shadow:0 8px 22px rgba(255,122,51,0.35); cursor:pointer; z-index:40; display:flex; align-items:center; justify-content:center;}
+  @media (max-width:480px){ .fab{right:18px;} }
+  .fab:active{transform:scale(0.94);}
+
+  /* SHEET */
+  .overlay{position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:50; opacity:0; pointer-events:none; transition:opacity .2s ease;}
+  .overlay.show{opacity:1; pointer-events:auto;}
+  .sheet{position:fixed; left:0; right:0; bottom:0; max-width:480px; margin:0 auto; background:var(--surface); border-radius:22px 22px 0 0; padding:18px 18px calc(22px + var(--safe-bottom)); z-index:51; transform:translateY(100%); transition:transform .25s cubic-bezier(.32,.72,0,1); max-height:88vh; overflow-y:auto;}
+  .sheet.show{transform:translateY(0);}
+  .sheet-handle{width:38px; height:4px; background:var(--surface-3); border-radius:99px; margin:0 auto 14px;}
+  .sheet h2{font-family:'Bebas Neue'; font-size:24px; margin:0 0 16px; letter-spacing:0.5px;}
+  .field{margin-bottom:12px;}
+  .field label{font-size:11px; color:var(--text-dim); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;}
+  .field input, .field select, .field textarea{width:100%; background:var(--surface-2); border:1px solid var(--surface-3); border-radius:10px; color:var(--text); font-size:15px; padding:11px 12px; font-family:'Inter';}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--run);}
+  .type-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .type-opt{background:var(--surface-2); border:1px solid var(--surface-3); border-radius:10px; padding:10px 4px; text-align:center; font-size:12px; font-weight:600; cursor:pointer; color:var(--text-dim);}
+  .type-opt.sel{border-color:var(--run); color:var(--text); background:rgba(255,122,51,0.1);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .save-btn{width:100%; background:var(--run); color:#0E1116; border:none; border-radius:12px; padding:14px; font-weight:800; font-size:15px; cursor:pointer; margin-top:6px;}
+  .save-btn:active{opacity:0.85;}
+  .cancel-btn{width:100%; background:none; border:none; color:var(--text-dim); padding:10px; font-size:13px; cursor:pointer;}
+
+  .toast{position:fixed; top:calc(14px + var(--safe-top)); left:50%; transform:translateX(-50%) translateY(-40px); background:var(--surface-3); color:var(--text); padding:10px 18px; border-radius:999px; font-size:13px; font-weight:600; z-index:60; opacity:0; transition:all .25s ease; pointer-events:none;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .loading{display:flex; align-items:center; justify-content:center; height:60vh; color:var(--text-dim); font-size:13px;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="loading" id="loading">Chargement du cockpit…</div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<button class="fab" id="fabBtn" style="display:none;">+</button>
+
+<div class="sheet" id="addSheet">
+  <div class="sheet-handle"></div>
+  <h2>Nouvelle séance</h2>
+  <div class="field">
+    <label>Type</label>
+    <div class="type-grid" id="typeGrid">
+      <div class="type-opt" data-type="course">🏃 Course</div>
+      <div class="type-opt" data-type="hyrox">🔥 Hyrox</div>
+      <div class="type-opt" data-type="muscu">🏋️ Muscu</div>
+      <div class="type-opt" data-type="velo">🚴 Vélo</div>
+      <div class="type-opt" data-type="natation">🏊 Nat.</div>
+      <div class="type-opt" data-type="autre">✳️ Autre</div>
+    </div>
+  </div>
+  <div class="field">
+    <label>Date</label>
+    <input type="date" id="fDate">
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>Distance (km)</label>
+      <input type="number" step="0.1" id="fDist" placeholder="0">
+    </div>
+    <div class="field">
+      <label>Durée (min)</label>
+      <input type="number" id="fDur" placeholder="0">
+    </div>
+  </div>
+  <div class="field">
+    <label>Tonnage (kg — pour muscu)</label>
+    <input type="number" id="fTon" placeholder="0">
+  </div>
+  <div class="field">
+    <label>Note (optionnel)</label>
+    <input type="text" id="fNote" placeholder="ex: 8x1000m allure Hyrox">
+  </div>
+  <button class="save-btn" id="saveBtn">Enregistrer la séance</button>
+  <button class="cancel-btn" id="cancelBtn">Annuler</button>
+</div>
+
+<div class="sheet" id="settingsSheet">
+  <div class="sheet-handle"></div>
+  <h2>Réglages</h2>
+  <div class="field">
+    <label>URL du JSON Garmin (GitHub raw)</label>
+    <input type="text" id="fGarminUrl" placeholder="https://raw.githubusercontent.com/user/repo/main/data/garmin-sessions.json">
+  </div>
+  <div class="conn-desc" style="margin-bottom:14px;">Colle ici l'URL brute de <code>garmin-sessions.json</code> une fois la synchro GitHub Actions configurée. Laisse vide pour rester en saisie 100% manuelle.</div>
+  <button class="save-btn" id="saveSettingsBtn">Enregistrer</button>
+  <button class="cancel-btn" id="cancelSettingsBtn">Fermer</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DAY_LABELS = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const TYPE_META = {
+  course:  {label:'Course',  cat:'run',      icon:'🏃'},
+  hyrox:   {label:'Hyrox',   cat:'run',      icon:'🔥'},
+  velo:    {label:'Vélo',    cat:'run',      icon:'🚴'},
+  natation:{label:'Natation',cat:'run',      icon:'🏊'},
+  muscu:   {label:'Muscu',   cat:'strength', icon:'🏋️'},
+  autre:   {label:'Autre',   cat:'other',    icon:'✳️'}
+};
+const CAT_COLOR = {run:'var(--run)', strength:'var(--strength)', other:'var(--other)'};
+
+let sessions = [];
+let garminSessions = []; // read-only, fetched from GitHub JSON
+let dailyFlags = {}; // { 'YYYY-MM-DD': {stretch:bool, abs:bool} }
+let nutrition = {};  // { 'YYYY-MM-DD': {kcal,prot,gluc,lip} }
+let settings = {};   // { garminUrl }
+let weekOffset = 0;
+let selectedType = 'course';
+let garminStatus = 'idle'; // idle | loading | ok | error
+
+async function fetchGarminSessions(){
+  if(!settings.garminUrl){ garminSessions = []; garminStatus='idle'; return; }
+  garminStatus = 'loading';
+  try{
+    const res = await fetch(settings.garminUrl + (settings.garminUrl.includes('?')?'&':'?') + '_=' + Date.now());
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    garminSessions = Array.isArray(data) ? data : [];
+    garminStatus = 'ok';
+  }catch(e){
+    garminSessions = [];
+    garminStatus = 'error';
+  }
+}
+
+// ---------- storage helpers ----------
+async function loadKey(key, fallback){
+  try{
+    const res = await window.storage.get(key, false);
+    if(res && res.value){ return JSON.parse(res.value); }
+    return fallback;
+  }catch(e){ return fallback; }
+}
+async function saveKey(key, value){
+  try{ await window.storage.set(key, JSON.stringify(value), false); }
+  catch(e){ showToast("Erreur d'enregistrement"); }
+}
+
+// ---------- date helpers ----------
+function toISO(d){ return d.toISOString().slice(0,10); }
+function getMonday(offset){
+  const d = new Date();
+  const day = d.getDay();
+  const diffToMon = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diffToMon + offset*7);
+  d.setHours(0,0,0,0);
+  return d;
+}
+function weekDates(offset){
+  const mon = getMonday(offset);
+  return [...Array(7)].map((_,i)=>{
+    const d = new Date(mon); d.setDate(mon.getDate()+i);
+    return toISO(d);
+  });
+}
+function weekLabel(offset){
+  const dates = weekDates(offset);
+  const start = new Date(dates[0]); const end = new Date(dates[6]);
+  const fmt = (d)=> d.toLocaleDateString('fr-FR',{day:'numeric', month:'short'});
+  if(offset===0) return "Cette semaine";
+  return `${fmt(start)} – ${fmt(end)}`;
+}
+
+// ---------- render ----------
+function polar(cx,cy,r,angleDeg){
+  const rad = (angleDeg-90) * Math.PI/180;
+  return {x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad)};
+}
+
+function render(){
+  const dates = weekDates(weekOffset);
+  const allSessions = sessions.concat(garminSessions);
+  const weekSessions = allSessions.filter(s=>dates.includes(s.date));
+  const kmTotal = weekSessions.reduce((a,s)=>a+(parseFloat(s.distance_km)||0),0);
+  const tonTotal = weekSessions.reduce((a,s)=>a+(parseFloat(s.tonnage_kg)||0),0);
+  const nbSeances = weekSessions.length;
+  const stretchDays = dates.filter(d=>dailyFlags[d]?.stretch).length;
+  const absDays = dates.filter(d=>dailyFlags[d]?.abs).length;
+
+  // ---- ring svg ----
+  const C = 2*Math.PI*100;
+  const gap = 7;
+  const arcLen = C/7 - gap;
+  let ringSegs = '';
+  let dots = '';
+  dates.forEach((d,i)=>{
+    const daySessions = allSessions.filter(s=>s.date===d);
+    let color = 'var(--muted)';
+    if(daySessions.some(s=>TYPE_META[s.type].cat==='run')) color = CAT_COLOR.run;
+    else if(daySessions.some(s=>TYPE_META[s.type].cat==='strength')) color = CAT_COLOR.strength;
+    else if(daySessions.length) color = CAT_COLOR.other;
+    const startAngle = i*(360/7);
+    ringSegs += `<circle cx="150" cy="150" r="100" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round"
+      stroke-dasharray="${arcLen} ${C-arcLen}" transform="rotate(${startAngle} 150 150)" opacity="${daySessions.length?1:0.5}"/>`;
+    const mid = startAngle + (360/7)/2;
+    if(dailyFlags[d]?.stretch){ const p = polar(150,150,124, mid-7); dots += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="var(--strength)"/>`; }
+    if(dailyFlags[d]?.abs){ const p = polar(150,150,124, mid+7); dots += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="var(--other)"/>`; }
+  });
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <header>
+      <div class="brand">
+        <div class="eyebrow">Semaine du sportif</div>
+        <h1>Cockpit</h1>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="week-nav">
+          <button id="prevWk">‹</button>
+          <div class="wk-label">${weekLabel(weekOffset)}</div>
+          <button id="nextWk">›</button>
+        </div>
+        <button id="settingsBtn" style="background:var(--surface); border:1px solid var(--surface-3); width:34px; height:34px; border-radius:50%; color:var(--text-dim); font-size:15px; cursor:pointer;">⚙️</button>
+      </div>
+    </header>
+
+    <div class="ring-hero">
+      <svg viewBox="0 0 300 300">
+        <circle cx="150" cy="150" r="100" fill="none" stroke="var(--surface-2)" stroke-width="14"/>
+        ${ringSegs}
+        ${dots}
+      </svg>
+      <div class="ring-center">
+        <div class="big">${kmTotal.toFixed(1)}</div>
+        <div class="unit">km cette semaine</div>
+        <div class="sub">${nbSeances} séance${nbSeances>1?'s':''} · ${tonTotal>0?tonTotal.toFixed(0)+' kg tonnage':'—'}</div>
+      </div>
+    </div>
+    <div class="ring-legend">
+      <span><i class="dot" style="background:var(--run)"></i>Cardio</span>
+      <span><i class="dot" style="background:var(--strength)"></i>Muscu</span>
+      <span><i class="dot" style="background:var(--strength); opacity:.6"></i>Étirements</span>
+      <span><i class="dot" style="background:var(--other)"></i>Abdos</span>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-card run"><div class="val">${kmTotal.toFixed(1)}</div><div class="lbl">Km courus</div></div>
+      <div class="stat-card"><div class="val">${nbSeances}</div><div class="lbl">Séances faites</div></div>
+      <div class="stat-card strength"><div class="val">${tonTotal.toFixed(0)}</div><div class="lbl">Tonnage (kg)</div></div>
+      <div class="stat-card"><div class="val">${stretchDays}/7</div><div class="lbl">Étir. · ${absDays}/7 abdos</div></div>
+    </div>
+
+    <div class="section-title">Étirements & abdos — check quotidien</div>
+    <div class="daily-strip" id="dailyStrip">
+      ${dates.map((d,i)=>{
+        const dd = new Date(d);
+        const on_s = dailyFlags[d]?.stretch;
+        const on_a = dailyFlags[d]?.abs;
+        return `<div class="day-col">
+          <div class="day-lbl">${DAY_LABELS[i]}</div>
+          <div class="day-num">${dd.getDate()}</div>
+          <div class="toggle-dot ${on_s?'on-stretch':''}" data-date="${d}" data-flag="stretch" title="Étirements">${on_s?'✓':''}</div>
+          <div class="toggle-dot ${on_a?'on-abs':''}" data-date="${d}" data-flag="abs" title="Abdos">${on_a?'✓':''}</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="section-title">Connexions</div>
+    <div class="conn-card">
+      <div class="conn-top"><span class="name">⌚ Garmin Connect</span><span class="pill ${garminStatus==='ok'?'on':'off'}">${garminStatusLabel()}</span></div>
+      <div class="conn-desc">${settings.garminUrl ? `Synchronisée via GitHub Actions (2x/jour). ${garminSessions.length} activité${garminSessions.length>1?'s':''} chargée${garminSessions.length>1?'s':''}.` : `Pas encore branché. Ouvre ⚙️ pour coller l'URL de ton fichier <code>garmin-sessions.json</code> GitHub une fois la synchro mise en place.`}</div>
+    </div>
+    <div class="conn-card">
+      <div class="conn-top"><span class="name">🍎 Apple Santé</span><span class="pill off">Indisponible (Safari)</span></div>
+      <div class="conn-desc">HealthKit n'est accessible qu'aux vraies apps iOS natives — aucun site web, même ajouté à l'écran d'accueil, ne peut y accéder. C'est une restriction d'Apple, pas de cette app.</div>
+    </div>
+    <div class="conn-card">
+      <div class="conn-top"><span class="name">🥗 Yazio</span><span class="pill off">Pas d'API publique</span></div>
+      <div class="conn-desc">Yazio ne propose pas d'API ouverte aux apps tierces. Saisis tes macros du jour ici, ça reste plus rapide qu'un copier-coller :</div>
+      <div class="nutri-row" id="nutriRow">
+        ${['kcal','prot','gluc','lip'].map(k=>`
+          <div class="nutri-field">
+            <label>${k}</label>
+            <input type="number" data-nutri="${k}" value="${nutrition[todayISO()]?.[k] ?? ''}" placeholder="0">
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section-title">Séances de la semaine</div>
+    <div id="sessionList">
+      ${renderSessionList(dates, weekSessions)}
+    </div>
+  `;
+
+  // listeners
+  document.getElementById('prevWk').onclick = ()=>{ weekOffset--; render(); };
+  document.getElementById('nextWk').onclick = ()=>{ weekOffset++; render(); };
+  document.getElementById('settingsBtn').onclick = openSettings;
+  document.querySelectorAll('.toggle-dot').forEach(el=>{
+    el.onclick = ()=> toggleFlag(el.dataset.date, el.dataset.flag);
+  });
+  document.querySelectorAll('#nutriRow input').forEach(el=>{
+    el.onchange = ()=> saveNutrition(el.dataset.nutri, el.value);
+  });
+  document.querySelectorAll('.del').forEach(el=>{
+    el.onclick = ()=> deleteSession(el.dataset.id);
+  });
+}
+
+function renderSessionList(dates, weekSessions){
+  if(weekSessions.length===0){
+    return `<div class="empty-state">Aucune séance cette semaine.<br>Appuie sur + pour ajouter ta première séance.</div>`;
+  }
+  const byDate = {};
+  dates.forEach(d=> byDate[d] = weekSessions.filter(s=>s.date===d));
+  return dates.slice().reverse().filter(d=>byDate[d].length).map(d=>{
+    const dd = new Date(d);
+    const label = dd.toLocaleDateString('fr-FR',{weekday:'long', day:'numeric', month:'short'});
+    const items = byDate[d].map(s=>{
+      const meta = TYPE_META[s.type];
+      const details = [];
+      if(s.distance_km) details.push(`${s.distance_km} km`);
+      if(s.duration_min) details.push(`${s.duration_min} min`);
+      if(s.tonnage_kg) details.push(`${s.tonnage_kg} kg`);
+      if(s.notes) details.push(s.notes);
+      const isGarmin = s.source === 'garmin';
+      return `<div class="session-item">
+        <div class="type-badge" style="background:${CAT_COLOR[meta.cat]}22;">${meta.icon}</div>
+        <div class="info">
+          <div class="t1">${meta.label}${isGarmin ? '<span class="badge-garmin">Garmin</span>' : ''}</div>
+          <div class="t2">${details.join(' · ') || '—'}</div>
+        </div>
+        ${isGarmin ? '' : `<button class="del" data-id="${s.id}">✕</button>`}
+      </div>`;
+    }).join('');
+    return `<div class="day-group"><div class="dg-title">${label}</div>${items}</div>`;
+  }).join('');
+}
+
+function todayISO(){ return toISO(new Date()); }
+
+function garminStatusLabel(){
+  if(garminStatus==='ok') return 'Connecté';
+  if(garminStatus==='loading') return 'Synchro…';
+  if(garminStatus==='error') return 'Erreur de lecture';
+  return 'Non branché';
+}
+
+async function toggleFlag(date, flag){
+  if(!dailyFlags[date]) dailyFlags[date] = {};
+  dailyFlags[date][flag] = !dailyFlags[date][flag];
+  await saveKey('dailyFlags', dailyFlags);
+  render();
+}
+
+async function saveNutrition(key, value){
+  const d = todayISO();
+  if(!nutrition[d]) nutrition[d] = {};
+  nutrition[d][key] = value;
+  await saveKey('nutrition', nutrition);
+  showToast('Macros enregistrées');
+}
+
+async function deleteSession(id){
+  sessions = sessions.filter(s=>s.id !== id);
+  await saveKey('sessions', sessions);
+  render();
+  showToast('Séance supprimée');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=> t.classList.remove('show'), 1800);
+}
+
+// ---------- add-session sheet ----------
+function openSheet(){
+  document.getElementById('fDate').value = todayISO();
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('addSheet').classList.add('show');
+}
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('addSheet').classList.remove('show');
+}
+
+function initSheetControls(){
+  document.getElementById('fabBtn').onclick = openSheet;
+  document.getElementById('overlay').onclick = closeSheet;
+  document.getElementById('cancelBtn').onclick = closeSheet;
+  document.querySelectorAll('.type-opt').forEach(el=>{
+    el.onclick = ()=>{
+      document.querySelectorAll('.type-opt').forEach(o=>o.classList.remove('sel'));
+      el.classList.add('sel');
+      selectedType = el.dataset.type;
+    };
+  });
+  document.querySelector('.type-opt[data-type="course"]').classList.add('sel');
+
+  document.getElementById('saveBtn').onclick = async ()=>{
+    const date = document.getElementById('fDate').value || todayISO();
+    const dist = document.getElementById('fDist').value;
+    const dur = document.getElementById('fDur').value;
+    const ton = document.getElementById('fTon').value;
+    const note = document.getElementById('fNote').value;
+    const s = {
+      id: 'sx_' + Date.now(),
+      date, type: selectedType,
+      distance_km: dist ? parseFloat(dist) : null,
+      duration_min: dur ? parseInt(dur) : null,
+      tonnage_kg: ton ? parseFloat(ton) : null,
+      notes: note || ''
+    };
+    sessions.push(s);
+    await saveKey('sessions', sessions);
+    closeSheet();
+    ['fDist','fDur','fTon','fNote'].forEach(id=>document.getElementById(id).value='');
+    showToast('Séance ajoutée 💪');
+    render();
+  };
+}
+
+// ---------- settings sheet ----------
+function openSettings(){
+  document.getElementById('fGarminUrl').value = settings.garminUrl || '';
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('settingsSheet').classList.add('show');
+}
+function closeSettings(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('settingsSheet').classList.remove('show');
+}
+function initSettingsControls(){
+  document.getElementById('cancelSettingsBtn').onclick = closeSettings;
+  document.getElementById('saveSettingsBtn').onclick = async ()=>{
+    settings.garminUrl = document.getElementById('fGarminUrl').value.trim();
+    await saveKey('settings', settings);
+    closeSettings();
+    showToast('Réglages enregistrés');
+    await fetchGarminSessions();
+    render();
+  };
+  // overlay click closes whichever sheet is open
+  document.getElementById('overlay').onclick = ()=>{ closeSheet(); closeSettings(); };
+}
+
+// ---------- init ----------
+async function init(){
+  sessions = await loadKey('sessions', []);
+  dailyFlags = await loadKey('dailyFlags', {});
+  nutrition = await loadKey('nutrition', {});
+  settings = await loadKey('settings', {});
+  await fetchGarminSessions();
+  render();
+  initSheetControls();
+  initSettingsControls();
+  document.getElementById('fabBtn').style.display = 'flex';
+}
+init();
+</script>
+</body>
+</html>
