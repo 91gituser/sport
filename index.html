@@ -66,31 +66,26 @@
   /* SECTION TITLES */
   .section-title{font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-dim-2); font-weight:700; margin:26px 0 10px 2px; display:flex; align-items:center; justify-content:space-between;}
 
-  /* DAILY STRIP (etirements / abdos) */
-  .daily-strip{display:flex; gap:6px; background:var(--surface); border:1px solid var(--surface-3); border-radius:var(--radius); padding:12px 10px;}
-  .day-col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;}
-  .day-col .day-lbl{font-size:10px; color:var(--text-dim); font-weight:700; text-transform:uppercase;}
-  .day-col .day-num{font-size:9px; color:var(--text-dim-2); margin-bottom:2px;}
+  /* HABIT BLOCKS (étirements / abdos) */
+  .habit-card{background:var(--surface); border:1px solid var(--surface-3); border-radius:var(--radius); padding:14px 16px;}
+  .habit-card.stretch{border-color:rgba(47,211,194,0.25);}
+  .habit-card.abs{border-color:rgba(201,166,255,0.25);}
+  .habit-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .habit-name{font-weight:700; font-size:14px;}
+  .habit-count{font-family:'Bebas Neue',sans-serif; font-size:26px; line-height:1;}
+  .habit-card.stretch .habit-count{color:var(--strength);}
+  .habit-card.abs .habit-count{color:var(--other);}
+  .habit-count-of{font-size:14px; color:var(--text-dim-2); font-family:'Inter'; font-weight:600;}
+  .habit-strip{display:flex; gap:6px;}
+  .habit-day{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .habit-day .day-lbl{font-size:10px; color:var(--text-dim); font-weight:700; text-transform:uppercase;}
   .toggle-dot{width:26px; height:26px; border-radius:50%; border:1.5px solid var(--surface-3); background:var(--surface-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; transition:transform .1s ease;}
   .toggle-dot:active{transform:scale(0.9);}
   .toggle-dot.on-stretch{background:var(--strength); border-color:var(--strength); color:#0E1116;}
   .toggle-dot.on-abs{background:var(--other); border-color:var(--other); color:#0E1116;}
 
-  /* CONNECTIONS */
-  .conn-card{background:var(--surface); border:1px solid var(--surface-3); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;}
-  .conn-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
-  .conn-top .name{font-weight:700; font-size:14px;}
-  .pill{font-size:10px; font-weight:700; padding:4px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:0.4px;}
-  .pill.off{background:rgba(255,92,92,0.12); color:var(--danger);}
-  .pill.on{background:rgba(47,211,194,0.14); color:var(--strength);}
+  /* GARMIN BADGE (sur les séances synchronisées) */
   .badge-garmin{font-size:9px; font-weight:700; color:var(--text-dim-2); background:var(--surface-2); border-radius:5px; padding:2px 5px; margin-left:6px; text-transform:uppercase; letter-spacing:0.3px;}
-  .conn-desc{font-size:12px; color:var(--text-dim); line-height:1.5;}
-
-  .nutri-row{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px;}
-  .nutri-field{display:flex; flex-direction:column; gap:4px;}
-  .nutri-field label{font-size:9px; color:var(--text-dim-2); font-weight:700; text-transform:uppercase;}
-  .nutri-field input{background:var(--surface-2); border:1px solid var(--surface-3); border-radius:8px; color:var(--text); font-size:13px; padding:7px 6px; width:100%; font-family:'Inter'; text-align:center;}
-  .nutri-field input:focus{outline:none; border-color:var(--run);}
 
   /* SESSION LIST */
   .day-group{margin-bottom:14px;}
@@ -231,16 +226,17 @@ async function fetchGarminSessions(){
   }
 }
 
-// ---------- storage helpers ----------
+// ---------- storage helpers (localStorage — version GitHub Pages autonome) ----------
+const LS_PREFIX = 'cockpit_';
 async function loadKey(key, fallback){
   try{
-    const res = await window.storage.get(key, false);
-    if(res && res.value){ return JSON.parse(res.value); }
+    const raw = localStorage.getItem(LS_PREFIX + key);
+    if(raw){ return JSON.parse(raw); }
     return fallback;
   }catch(e){ return fallback; }
 }
 async function saveKey(key, value){
-  try{ await window.storage.set(key, JSON.stringify(value), false); }
+  try{ localStorage.setItem(LS_PREFIX + key, JSON.stringify(value)); }
   catch(e){ showToast("Erreur d'enregistrement"); }
 }
 
@@ -348,39 +344,39 @@ function render(){
       <div class="stat-card"><div class="val">${stretchDays}/7</div><div class="lbl">Étir. · ${absDays}/7 abdos</div></div>
     </div>
 
-    <div class="section-title">Étirements & abdos — check quotidien</div>
-    <div class="daily-strip" id="dailyStrip">
-      ${dates.map((d,i)=>{
-        const dd = new Date(d);
-        const on_s = dailyFlags[d]?.stretch;
-        const on_a = dailyFlags[d]?.abs;
-        return `<div class="day-col">
-          <div class="day-lbl">${DAY_LABELS[i]}</div>
-          <div class="day-num">${dd.getDate()}</div>
-          <div class="toggle-dot ${on_s?'on-stretch':''}" data-date="${d}" data-flag="stretch" title="Étirements">${on_s?'✓':''}</div>
-          <div class="toggle-dot ${on_a?'on-abs':''}" data-date="${d}" data-flag="abs" title="Abdos">${on_a?'✓':''}</div>
-        </div>`;
-      }).join('')}
+    <div class="section-title">Étirements</div>
+    <div class="habit-card stretch">
+      <div class="habit-top">
+        <span class="habit-name">🧘 Étirements</span>
+        <span class="habit-count">${stretchDays}<span class="habit-count-of">/7</span></span>
+      </div>
+      <div class="habit-strip">
+        ${dates.map((d,i)=>{
+          const dd = new Date(d);
+          const on = dailyFlags[d]?.stretch;
+          return `<div class="habit-day">
+            <div class="day-lbl">${DAY_LABELS[i]}</div>
+            <div class="toggle-dot ${on?'on-stretch':''}" data-date="${d}" data-flag="stretch">${on?'✓':''}</div>
+          </div>`;
+        }).join('')}
+      </div>
     </div>
 
-    <div class="section-title">Connexions</div>
-    <div class="conn-card">
-      <div class="conn-top"><span class="name">⌚ Garmin Connect</span><span class="pill ${garminStatus==='ok'?'on':'off'}">${garminStatusLabel()}</span></div>
-      <div class="conn-desc">${settings.garminUrl ? `Synchronisée via GitHub Actions (2x/jour). ${garminSessions.length} activité${garminSessions.length>1?'s':''} chargée${garminSessions.length>1?'s':''}.` : `Pas encore branché. Ouvre ⚙️ pour coller l'URL de ton fichier <code>garmin-sessions.json</code> GitHub une fois la synchro mise en place.`}</div>
-    </div>
-    <div class="conn-card">
-      <div class="conn-top"><span class="name">🍎 Apple Santé</span><span class="pill off">Indisponible (Safari)</span></div>
-      <div class="conn-desc">HealthKit n'est accessible qu'aux vraies apps iOS natives — aucun site web, même ajouté à l'écran d'accueil, ne peut y accéder. C'est une restriction d'Apple, pas de cette app.</div>
-    </div>
-    <div class="conn-card">
-      <div class="conn-top"><span class="name">🥗 Yazio</span><span class="pill off">Pas d'API publique</span></div>
-      <div class="conn-desc">Yazio ne propose pas d'API ouverte aux apps tierces. Saisis tes macros du jour ici, ça reste plus rapide qu'un copier-coller :</div>
-      <div class="nutri-row" id="nutriRow">
-        ${['kcal','prot','gluc','lip'].map(k=>`
-          <div class="nutri-field">
-            <label>${k}</label>
-            <input type="number" data-nutri="${k}" value="${nutrition[todayISO()]?.[k] ?? ''}" placeholder="0">
-          </div>`).join('')}
+    <div class="section-title">Abdos</div>
+    <div class="habit-card abs">
+      <div class="habit-top">
+        <span class="habit-name">🔺 Abdos</span>
+        <span class="habit-count">${absDays}<span class="habit-count-of">/7</span></span>
+      </div>
+      <div class="habit-strip">
+        ${dates.map((d,i)=>{
+          const dd = new Date(d);
+          const on = dailyFlags[d]?.abs;
+          return `<div class="habit-day">
+            <div class="day-lbl">${DAY_LABELS[i]}</div>
+            <div class="toggle-dot ${on?'on-abs':''}" data-date="${d}" data-flag="abs">${on?'✓':''}</div>
+          </div>`;
+        }).join('')}
       </div>
     </div>
 
@@ -396,9 +392,6 @@ function render(){
   document.getElementById('settingsBtn').onclick = openSettings;
   document.querySelectorAll('.toggle-dot').forEach(el=>{
     el.onclick = ()=> toggleFlag(el.dataset.date, el.dataset.flag);
-  });
-  document.querySelectorAll('#nutriRow input').forEach(el=>{
-    el.onchange = ()=> saveNutrition(el.dataset.nutri, el.value);
   });
   document.querySelectorAll('.del').forEach(el=>{
     el.onclick = ()=> deleteSession(el.dataset.id);
@@ -437,26 +430,11 @@ function renderSessionList(dates, weekSessions){
 
 function todayISO(){ return toISO(new Date()); }
 
-function garminStatusLabel(){
-  if(garminStatus==='ok') return 'Connecté';
-  if(garminStatus==='loading') return 'Synchro…';
-  if(garminStatus==='error') return 'Erreur de lecture';
-  return 'Non branché';
-}
-
 async function toggleFlag(date, flag){
   if(!dailyFlags[date]) dailyFlags[date] = {};
   dailyFlags[date][flag] = !dailyFlags[date][flag];
   await saveKey('dailyFlags', dailyFlags);
   render();
-}
-
-async function saveNutrition(key, value){
-  const d = todayISO();
-  if(!nutrition[d]) nutrition[d] = {};
-  nutrition[d][key] = value;
-  await saveKey('nutrition', nutrition);
-  showToast('Macros enregistrées');
 }
 
 async function deleteSession(id){
