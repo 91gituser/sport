@@ -1,5 +1,15 @@
 [
   {
+    "id": "garmin_23992146284",
+    "date": "2026-08-16",
+    "type": "course",
+    "distance_km": 13.82,
+    "duration_min": 86,
+    "tonnage_kg": null,
+    "notes": "Singapore Running",
+    "source": "garmin"
+  },
+  {
     "id": "garmin_23980887127",
     "date": "2026-08-15",
     "type": "autre",
@@ -107,16 +117,6 @@
     "duration_min": 44,
     "tonnage_kg": null,
     "notes": "Musculation",
-    "source": "garmin"
-  },
-  {
-    "id": "garmin_23861143934",
-    "date": "2026-08-05",
-    "type": "course",
-    "distance_km": 10.34,
-    "duration_min": 68,
-    "tonnage_kg": null,
-    "notes": "Singapore - Run Seuil",
     "source": "garmin"
   }
 ]
