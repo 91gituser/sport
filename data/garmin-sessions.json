@@ -1,5 +1,15 @@
 [
   {
+    "id": "garmin_24004515259",
+    "date": "2026-08-17",
+    "type": "muscu",
+    "distance_km": null,
+    "duration_min": 78,
+    "tonnage_kg": null,
+    "notes": "Musculation",
+    "source": "garmin"
+  },
+  {
     "id": "garmin_23992146284",
     "date": "2026-08-16",
     "type": "course",
@@ -107,16 +117,6 @@
     "duration_min": 81,
     "tonnage_kg": null,
     "notes": "HIIT",
-    "source": "garmin"
-  },
-  {
-    "id": "garmin_23868524395",
-    "date": "2026-08-06",
-    "type": "muscu",
-    "distance_km": null,
-    "duration_min": 44,
-    "tonnage_kg": null,
-    "notes": "Musculation",
     "source": "garmin"
   }
 ]
