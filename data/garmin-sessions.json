@@ -108,15 +108,5 @@
     "tonnage_kg": null,
     "notes": "Singapore Running",
     "source": "garmin"
-  },
-  {
-    "id": "garmin_23919902582",
-    "date": "2026-08-10",
-    "type": "muscu",
-    "distance_km": null,
-    "duration_min": 90,
-    "tonnage_kg": null,
-    "notes": "Musculation",
-    "source": "garmin"
   }
 ]
