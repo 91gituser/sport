@@ -88,15 +88,5 @@
     "tonnage_kg": null,
     "notes": "HIIT",
     "source": "garmin"
-  },
-  {
-    "id": "garmin_23948016083",
-    "date": "2026-08-12",
-    "type": "course",
-    "distance_km": 10.32,
-    "duration_min": 63,
-    "tonnage_kg": null,
-    "notes": "Singapore - Run Seuil",
-    "source": "garmin"
   }
 ]
