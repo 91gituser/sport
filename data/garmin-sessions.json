@@ -1,5 +1,15 @@
 [
   {
+    "id": "garmin_24103678030",
+    "date": "2026-08-25",
+    "type": "course",
+    "distance_km": 10.13,
+    "duration_min": 56,
+    "tonnage_kg": null,
+    "notes": "Singapore Running",
+    "source": "garmin"
+  },
+  {
     "id": "garmin_24092167159",
     "date": "2026-08-24",
     "type": "muscu",
@@ -75,16 +85,6 @@
     "type": "autre",
     "distance_km": null,
     "duration_min": 87,
-    "tonnage_kg": null,
-    "notes": "HIIT",
-    "source": "garmin"
-  },
-  {
-    "id": "garmin_23972195887",
-    "date": "2026-08-14",
-    "type": "autre",
-    "distance_km": null,
-    "duration_min": 56,
     "tonnage_kg": null,
     "notes": "HIIT",
     "source": "garmin"
