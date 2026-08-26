@@ -1,5 +1,15 @@
 [
   {
+    "id": "garmin_24122200620",
+    "date": "2026-08-26",
+    "type": "course",
+    "distance_km": 9.33,
+    "duration_min": 57,
+    "tonnage_kg": null,
+    "notes": "Singapore - Run Seuil",
+    "source": "garmin"
+  },
+  {
     "id": "garmin_24103678030",
     "date": "2026-08-25",
     "type": "course",
