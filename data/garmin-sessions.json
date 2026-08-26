@@ -78,15 +78,5 @@
     "tonnage_kg": null,
     "notes": "Singapore Running",
     "source": "garmin"
-  },
-  {
-    "id": "garmin_23980887127",
-    "date": "2026-08-15",
-    "type": "autre",
-    "distance_km": null,
-    "duration_min": 87,
-    "tonnage_kg": null,
-    "notes": "HIIT",
-    "source": "garmin"
   }
 ]
