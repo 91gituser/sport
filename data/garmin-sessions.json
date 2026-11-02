@@ -1,5 +1,15 @@
 [
   {
+    "id": "garmin_24935231824",
+    "date": "2026-11-02",
+    "type": "muscu",
+    "distance_km": null,
+    "duration_min": 47,
+    "tonnage_kg": null,
+    "notes": "Musculation",
+    "source": "garmin"
+  },
+  {
     "id": "garmin_24926365266",
     "date": "2026-11-01",
     "type": "autre",
