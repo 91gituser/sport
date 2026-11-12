@@ -78,25 +78,5 @@
     "tonnage_kg": null,
     "notes": "Musculation",
     "source": "garmin"
-  },
-  {
-    "id": "garmin_24926365266",
-    "date": "2026-11-01",
-    "type": "autre",
-    "distance_km": null,
-    "duration_min": 34,
-    "tonnage_kg": null,
-    "notes": "HIIT",
-    "source": "garmin"
-  },
-  {
-    "id": "garmin_24922853225",
-    "date": "2026-11-01",
-    "type": "autre",
-    "distance_km": null,
-    "duration_min": 84,
-    "tonnage_kg": null,
-    "notes": "HIIT",
-    "source": "garmin"
   }
 ]
