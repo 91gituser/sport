@@ -88,15 +88,5 @@
     "tonnage_kg": null,
     "notes": "HIIT",
     "source": "garmin"
-  },
-  {
-    "id": "garmin_25006428993",
-    "date": "2026-11-08",
-    "type": "autre",
-    "distance_km": null,
-    "duration_min": 37,
-    "tonnage_kg": null,
-    "notes": "HIIT",
-    "source": "garmin"
   }
 ]
