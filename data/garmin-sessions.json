@@ -1,5 +1,15 @@
 [
   {
+    "id": "garmin_25147419362",
+    "date": "2026-11-21",
+    "type": "autre",
+    "distance_km": null,
+    "duration_min": 74,
+    "tonnage_kg": null,
+    "notes": "HIIT",
+    "source": "garmin"
+  },
+  {
     "id": "garmin_25139186961",
     "date": "2026-11-20",
     "type": "muscu",
